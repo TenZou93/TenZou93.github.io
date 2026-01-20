@@ -160,9 +160,19 @@
   }
 
   function onScanSuccess(decodedText) {
+    const data = getData();
+
+    // Cek duplikat
+    const isDuplicate = data.some(item => item.text === decodedText);
+
+    if (isDuplicate) {
+      alert('QR Code sudah pernah discan!');
+      return;
+    }
+
+    alert('Scan Berhasil!');
     scanResult.innerText = `Berhasil Scan: ${decodedText}`;
 
-    const data = getData();
     data.push({
       text: decodedText,
       time: new Date().toLocaleString('id-ID')
