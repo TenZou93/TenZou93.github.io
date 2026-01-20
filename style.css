@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+}
+video {
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+}
+#result {
+    margin: 20px 0;
+    font-size: 18px;
+    color: green;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    background: #f0f0f0;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background: #0056b3;
+}
