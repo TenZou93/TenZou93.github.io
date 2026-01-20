@@ -149,13 +149,8 @@
 
 <header>
   <h2>SCAN QR CODE</h2>
-  <p>EXPLORE CAMPUS – IIKNU TUBAN</p>
+  <p>EXPLORE CAMPUS – IIKNU TUBAN 2026</p>
 </header>
-
-<nav>
-  <button onclick="showScan()">SCAN QR</button>
-  <button class="secondary" onclick="showData()">DATA HASIL SCAN</button>
-</nav>
 
 <div class="container">
 
@@ -184,6 +179,11 @@
 
 </div>
 
+  <nav>
+  <button onclick="showScan()">SCAN QR</button>
+  <button class="secondary" onclick="showData()">HISTORY SCAN</button>
+</nav>
+  
 <footer>
   © 2026 EXPLORE CAMPUS – IIKNU TUBAN
 </footer>
@@ -193,6 +193,10 @@
   const dataPage = document.getElementById('dataPage');
   const scanResult = document.getElementById('scanResult');
   const dataTable = document.getElementById('dataTable');
+
+  // Audio
+  const successSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-scanner-beep-903.mp3');
+  const errorSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-error-tone-419.mp3');
 
   function showScan() {
     scanPage.classList.remove('hidden');
@@ -235,17 +239,17 @@
 
   function onScanSuccess(decodedText) {
     const data = getData();
-
-    // Cek duplikat
     const isDuplicate = data.some(item => item.text === decodedText);
 
     if (isDuplicate) {
-      alert('QR Code sudah pernah discan!');
+      errorSound.play();
+      alert('Maaf, QR Code sudah pernah discan!');
       return;
     }
 
+    successSound.play();
     alert('Scan Berhasil!');
-    scanResult.innerText = `Berhasil Scan: ${decodedText}`;
+    scanResult.innerText = `QR Code berhasil discan: ${decodedText}`;
 
     data.push({
       text: decodedText,
