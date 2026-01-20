@@ -153,7 +153,7 @@
 </header>
 
 <nav>
-  <button onclick="showScan()">SCAN QR</button>
+  <button onclick="startCamera()">AKTIFKAN KAMERA</button>
   <button class="secondary" onclick="showData()">DATA HASIL SCAN</button>
 </nav>
 
@@ -285,7 +285,28 @@
   }
   }
 
-  const html5QrCode = new Html5Qrcode("reader");
+  let html5QrCode;
+
+  function startCamera() {
+    unlockAudio();
+    showScan();
+
+    if (!html5QrCode) {
+      html5QrCode = new Html5Qrcode("reader");
+    }
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 8, qrbox: 250 },
+      onScanSuccess
+    ).catch(err => {
+      alert('Kamera tidak bisa diakses. Pastikan izin kamera diaktifkan.');
+      console.error(err);
+    });
+  }
+
+  // Inisialisasi objek
+  html5QrCode = new Html5Qrcode("reader");
   html5QrCode.start(
     { facingMode: "environment" },
     { fps: 10, qrbox: 250 },
