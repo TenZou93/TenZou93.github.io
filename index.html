@@ -194,29 +194,23 @@
   const scanResult = document.getElementById('scanResult');
   const dataTable = document.getElementById('dataTable');
 
-  // Audio (harus di-unlock dengan interaksi user)
+  // ===== AUDIO =====
   const successSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-scanner-beep-903.mp3');
   const errorSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-error-tone-419.mp3');
-
   let audioUnlocked = false;
 
   function unlockAudio() {
-    if (!audioUnlocked) {
-      successSound.play().then(() => {
-        successSound.pause();
-        successSound.currentTime = 0;
-      }).catch(() => {});
+    if (audioUnlocked) return;
+    successSound.play().then(() => {
+      successSound.pause(); successSound.currentTime = 0;
+    }).catch(() => {});
+    errorSound.play().then(() => {
+      errorSound.pause(); errorSound.currentTime = 0;
+    }).catch(() => {});
+    audioUnlocked = true;
+  }
 
-      errorSound.play().then(() => {
-        errorSound.pause();
-        errorSound.currentTime = 0;
-      }).catch(() => {});
-
-      audioUnlocked = true;
-      console.log('Audio unlocked');
-    }
-  }('https://assets.mixkit.co/sfx/preview/mixkit-error-tone-419.mp3');
-
+  // ===== NAV =====
   function showScan() {
     scanPage.classList.remove('hidden');
     dataPage.classList.add('hidden');
@@ -228,6 +222,7 @@
     renderTable();
   }
 
+  // ===== DATA =====
   function getData() {
     return JSON.parse(localStorage.getItem('scanData')) || [];
   }
@@ -240,12 +235,7 @@
     const data = getData();
     dataTable.innerHTML = '';
     data.forEach((item, index) => {
-      const row = `<tr>
-        <td>${index + 1}</td>
-        <td>${item.text}</td>
-        <td>${item.time}</td>
-      </tr>`;
-      dataTable.innerHTML += row;
+      dataTable.innerHTML += `<tr><td>${index+1}</td><td>${item.text}</td><td>${item.time}</td></tr>`;
     });
   }
 
@@ -256,62 +246,55 @@
     }
   }
 
-  function onScanSuccess(decodedText) {
-    const data = getData();
-    const isDuplicate = data.some(item => item.text === decodedText);
-
-    // Pause kamera agar tidak scan berulang
-    html5QrCode.pause(true);
-
-    if (isDuplicate) {
-      errorSound.play();
-      alert('QR Code sudah pernah discan!');
-      setTimeout(() => html5QrCode.resume(), 2000);
-      return;
-    }
-
-    successSound.play();
-    alert('Scan Berhasil!');
-    scanResult.innerText = `Berhasil Scan: ${decodedText}`;
-
-    data.push({
-      text: decodedText,
-      time: new Date().toLocaleString('id-ID')
-    });
-    saveData(data);
-
-    // Lanjut scan setelah 2 detik
-    setTimeout(() => html5QrCode.resume(), 2000);
-  }
-  }
-
+  // ===== QR SCANNER (STABLE & SIMPLE) =====
   let html5QrCode;
+  let isScanning = false;
 
   function startCamera() {
     unlockAudio();
     showScan();
 
-    if (!html5QrCode) {
-      html5QrCode = new Html5Qrcode("reader");
-    }
+    if (isScanning) return;
+
+    html5QrCode = new Html5Qrcode('reader');
+    isScanning = true;
 
     html5QrCode.start(
-      { facingMode: "environment" },
-      { fps: 8, qrbox: 250 },
+      { facingMode: 'environment' },
+      { fps: 8, qrbox: 230 },
       onScanSuccess
     ).catch(err => {
-      alert('Kamera tidak bisa diakses. Pastikan izin kamera diaktifkan.');
+      alert('❌ Kamera gagal dibuka. Pastikan izin kamera diaktifkan.');
       console.error(err);
+      isScanning = false;
     });
   }
 
-  // Inisialisasi objek
-  html5QrCode = new Html5Qrcode("reader");
-  html5QrCode.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    onScanSuccess
-  );
+  function onScanSuccess(decodedText) {
+    if (!isScanning) return;
+
+    // PAUSE scan agar tidak terlalu cepat
+    html5QrCode.pause(true);
+
+    const data = getData();
+    const isDuplicate = data.some(d => d.text === decodedText);
+
+    if (isDuplicate) {
+      errorSound.play();
+      alert('QR Code sudah pernah discan!');
+    } else {
+      successSound.play();
+      alert('Scan Berhasil!');
+      scanResult.innerText = `Berhasil Scan: ${decodedText}`;
+      data.push({ text: decodedText, time: new Date().toLocaleString('id-ID') });
+      saveData(data);
+    }
+
+    // RESUME scan setelah 2 detik
+    setTimeout(() => {
+      html5QrCode.resume();
+    }, 2000);
+  }
 </script>
 
 </body>
