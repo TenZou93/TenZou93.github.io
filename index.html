@@ -78,11 +78,6 @@
   <p>EXPLORE CAMPUS – IIKNU TUBAN</p>
 </header>
 
-<nav>
-  <button onclick="showScan()">SCAN QR</button>
-  <button class="secondary" onclick="showData()">DATA HASIL SCAN</button>
-</nav>
-
 <div class="container">
 
   <!-- HALAMAN SCAN -->
@@ -110,6 +105,11 @@
 
 </div>
 
+  <nav>
+  <button onclick="showScan()">SCAN QR</button>
+  <button class="secondary" onclick="showData()">DATA HASIL SCAN</button>
+</nav>
+  
 <footer>
   © 2026 EXPLORE CAMPUS – IIKNU TUBAN
 </footer>
@@ -171,7 +171,7 @@
     }
 
     alert('Scan Berhasil!');
-    scanResult.innerText = `Berhasil Scan: ${decodedText}`;
+    scanResult.innerText = `QR Code Berhasil discan: ${decodedText}`;
 
     data.push({
       text: decodedText,
