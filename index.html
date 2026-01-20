@@ -149,12 +149,12 @@
 
 <header>
   <h2>SCAN QR CODE</h2>
-  <p>EXPLORE CAMPUS – IIKNU TUBAN</p>
+  <p>EXPLORE CAMPUS – IIKNU TUBAN 2026</p>
 </header>
 
 <nav>
   <button onclick="startCamera()">AKTIFKAN KAMERA</button>
-  <button class="secondary" onclick="showData()">DATA HASIL SCAN</button>
+  <button class="secondary" onclick="showData()">HISTORY SCAN</button>
 </nav>
 
 <div class="container">
@@ -168,13 +168,13 @@
 
   <!-- HALAMAN DATA -->
   <div id="dataPage" class="hidden">
-    <h3>Data Hasil Scan</h3>
+    <h3>Histoy Scan</h3>
     <button onclick="clearData()" style="margin-bottom:10px;background:#dc2626;color:white;padding:8px 12px;border:none;border-radius:6px;cursor:pointer">Hapus Semua Data</button>
     <table>
       <thead>
         <tr>
           <th>No</th>
-          <th>Isi QR Code</th>
+          <th>Kode Tiket</th>
           <th>Waktu Scan</th>
         </tr>
       </thead>
@@ -185,7 +185,7 @@
 </div>
 
 <footer>
-  © 2026 EXPLORE CAMPUS – IIKNU TUBAN
+  TENZOU.INC © 2026 EXPLORE CAMPUS – IIKNU TUBAN
 </footer>
 
 <script>
@@ -281,11 +281,11 @@
 
     if (isDuplicate) {
       errorSound.play();
-      alert('QR Code sudah pernah discan!');
+      alert('Maaf, QR Code sudah pernah discan!');
     } else {
       successSound.play();
-      alert('Scan Berhasil!');
-      scanResult.innerText = `Berhasil Scan: ${decodedText}`;
+      alert('QR Code Berhasil discan');
+      scanResult.innerText = `VALID: ${decodedText}`;
       data.push({ text: decodedText, time: new Date().toLocaleString('id-ID') });
       saveData(data);
     }
