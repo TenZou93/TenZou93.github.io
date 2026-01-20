@@ -1,18 +1,182 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EXPLORE CAMPUS - IIKNU TUBAN - Scan QR</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Scan QRCode | EXPLORE CAMPUS - IIKNU TUBAN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #0f172a;
+      color: white;
+      padding: 16px;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    nav button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+    }
+    nav button.secondary {
+      background: #475569;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 15px;
+    }
+    #reader {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: white;
+    }
+    table th, table td {
+      border: 1px solid #e5e7eb;
+      padding: 8px;
+      text-align: center;
+    }
+    table th {
+      background: #e2e8f0;
+    }
+    .hidden {
+      display: none;
+    }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 30px;
+    }
+  </style>
 </head>
 <body>
-    <h1>EXPLORE CAMPUS - IIKNU TUBAN</h1>
-    <h2>Scan QR Code</h2>
-    <video id="preview"></video>
-    <div id="result"></div>
-    <button onclick="window.location.href='data.html'">Lihat Data</button>
-    <script src="instascan.min.js"></script>
-    <script src="script.js"></script>
+
+<header>
+  <h2>SCAN QR CODE</h2>
+  <p>EXPLORE CAMPUS – IIKNU TUBAN</p>
+</header>
+
+<nav>
+  <button onclick="showScan()">SCAN QR</button>
+  <button class="secondary" onclick="showData()">DATA HASIL SCAN</button>
+</nav>
+
+<div class="container">
+
+  <!-- HALAMAN SCAN -->
+  <div id="scanPage">
+    <h3 style="text-align:center">Arahkan Kamera ke QR Code</h3>
+    <div id="reader"></div>
+    <p id="scanResult" style="text-align:center;font-weight:bold;color:#2563eb"></p>
+  </div>
+
+  <!-- HALAMAN DATA -->
+  <div id="dataPage" class="hidden">
+    <h3>Data Hasil Scan</h3>
+    <button onclick="clearData()" style="margin-bottom:10px;background:#dc2626;color:white;padding:8px 12px;border:none;border-radius:6px;cursor:pointer">Hapus Semua Data</button>
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Isi QR Code</th>
+          <th>Waktu Scan</th>
+        </tr>
+      </thead>
+      <tbody id="dataTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 EXPLORE CAMPUS – IIKNU TUBAN
+</footer>
+
+<script>
+  const scanPage = document.getElementById('scanPage');
+  const dataPage = document.getElementById('dataPage');
+  const scanResult = document.getElementById('scanResult');
+  const dataTable = document.getElementById('dataTable');
+
+  function showScan() {
+    scanPage.classList.remove('hidden');
+    dataPage.classList.add('hidden');
+  }
+
+  function showData() {
+    scanPage.classList.add('hidden');
+    dataPage.classList.remove('hidden');
+    renderTable();
+  }
+
+  function getData() {
+    return JSON.parse(localStorage.getItem('scanData')) || [];
+  }
+
+  function saveData(data) {
+    localStorage.setItem('scanData', JSON.stringify(data));
+  }
+
+  function renderTable() {
+    const data = getData();
+    dataTable.innerHTML = '';
+    data.forEach((item, index) => {
+      const row = `<tr>
+        <td>${index + 1}</td>
+        <td>${item.text}</td>
+        <td>${item.time}</td>
+      </tr>`;
+      dataTable.innerHTML += row;
+    });
+  }
+
+  function clearData() {
+    if (confirm('Yakin ingin menghapus semua data?')) {
+      localStorage.removeItem('scanData');
+      renderTable();
+    }
+  }
+
+  function onScanSuccess(decodedText) {
+    scanResult.innerText = `Berhasil Scan: ${decodedText}`;
+
+    const data = getData();
+    data.push({
+      text: decodedText,
+      time: new Date().toLocaleString('id-ID')
+    });
+    saveData(data);
+  }
+
+  const html5QrCode = new Html5Qrcode("reader");
+  html5QrCode.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    onScanSuccess
+  );
+</script>
+
 </body>
 </html>
